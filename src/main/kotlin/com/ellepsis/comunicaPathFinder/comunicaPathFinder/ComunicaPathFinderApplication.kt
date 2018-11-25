@@ -1,9 +1,7 @@
 package com.ellepsis.comunicaPathFinder.comunicaPathFinder
 
-import com.ellepsis.comunicaPathFinder.comunicaPathFinder.service.ModelService
-import com.ellepsis.comunicaPathFinder.comunicaPathFinder.service.PathFinderService
-import com.ellepsis.comunicaPathFinder.comunicaPathFinder.service.SparqlQueryExecutor
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
 @SpringBootApplication
 class ComunicaPathFinderApplication {
@@ -11,7 +9,7 @@ class ComunicaPathFinderApplication {
 }
 
 fun main(args: Array<String>) {
-    PathFinderService(SparqlQueryExecutor(), ModelService())
-            .findPath("https://www.wikidata.org/about#liveDataLDn3", "http://www.w3.org/ns/dcat#Distribution")
-//    runApplication<ComunicaPathFinderApplication>(*args)
+//    PathFinderService(SparqlQueryExecutor(), ModelService())
+//            .findPath("http://rdf.adalab-project.org/ontology/adalab/biochemicalEntity", "http://purl.obolibrary.org/obo/BFO_0000002")
+    runApplication<ComunicaPathFinderApplication>(*args)
 }

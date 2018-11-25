@@ -9,9 +9,15 @@ data class TreeNode(
         val model: Model,
         val depth: Int,
         val parentResult: ExecutionResult?,
-        val executionResults: List<TreeNode>?
+        val parentNode: TreeNode?
 ) {
+
     override fun toString(): String {
-        return depth.toString() + parentResult.toString() + executionResults.toString()
+        return """
+${parentNode?.toString() ?: ""}
+Depth: $depth
+ ${parentResult.toString()}
+->
+"""
     }
 }

@@ -1,5 +1,6 @@
 package com.ellepsis.comunicaPathFinder.comunicaPathFinder.service
 
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.apache.jena.rdf.model.Model
@@ -12,15 +13,17 @@ import org.springframework.stereotype.Service
  */
 @Service
 class ModelService {
+
     val pathes: Array<String> = arrayOf(
 //            "C:\\Users\\ellepsis\\Downloads\\go.owl",
-            "C:\\Users\\ellepsis\\Downloads\\dcatap.rdf"
+            "C:\\Users\\ellepsis\\Downloads\\dcatap.rdf",
+            "C:\\Users\\ellepsis\\Downloads\\adalab.owl"
     )
 
     fun loadAll(): List<Model?> {
         return runBlocking {
             pathes.map { m ->
-                async { loadModel(m) }
+                GlobalScope.async { loadModel(m) }
             }.map { deferred ->
                 deferred.await()
             }
