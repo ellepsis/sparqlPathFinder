@@ -1,6 +1,7 @@
 package com.ellepsis.comunicaPathFinder.comunicaPathFinder.service
 
-import org.apache.jena.rdf.model.Model
+import com.ellepsis.comunicaPathFinder.comunicaPathFinder.entity.ModelWithData
+import com.ellepsis.comunicaPathFinder.comunicaPathFinder.entity.TreeNode
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -13,14 +14,17 @@ import java.time.LocalDateTime
 @Service
 class PathFinderService @Autowired constructor(val sparqlQueryExecutor: SparqlQueryExecutor, modelService: ModelService) {
 
-    final var models: List<Model> = modelService.loadAll().filterNotNull()
+    final var models: List<ModelWithData> = modelService.loadAll()
 
-    fun findPath(source: String, target: String) {
-        val pathFinder = PathFinder(3, models, source, target, sparqlQueryExecutor)
+    fun findPath(source: String, target: String, maxDepth: Int): TreeNode? {
+        if (maxDepth < 1){
+            throw IllegalArgumentException("Minimum depth is 1");
+        }
+        val pathFinder = PathFinder(5, models, source, target, sparqlQueryExecutor)
         val now = LocalDateTime.now()
-        val findPath = pathFinder.findPath()
-        println(findPath)
+        val foundPath = pathFinder.findPath()
         println("Elapsed time: ${Duration.between(now, LocalDateTime.now()).toMillis()} ms")
+        return foundPath
     }
 
     fun findAll() {
@@ -31,7 +35,7 @@ class PathFinderService @Autowired constructor(val sparqlQueryExecutor: SparqlQu
                     WHERE {
                         ?x ?y ?z.
                     }
-                    """, m)
+                    """, m.model)
         }
 
     }

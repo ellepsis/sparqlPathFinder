@@ -8,22 +8,29 @@
 <body>
 <div class="container">
     <H1>SPARQL Path Finder</H1>
-    <form>
-        <div class="form-group">
-            <label for="sourceInput">Source resource</label>
-            <input type="text" class="form-control" id="sourceInput">
-        </div>
-        <div class="form-group">
-            <label for="targetInput">Target resource</label>
-            <input type="text" class="form-control" id="targetInput">
-        </div>
-        <button type="submit" class="btn btn-primary" id="submitSearch">Submit</button>
-    </form>
+    <div class="form-group">
+        <label for="sourceInput">Source resource</label>
+        <input type="text" class="form-control" id="sourceInput"
+               value="http://rdf.adalab-project.org/ontology/adalab/SyntheticEntity">
+    </div>
+    <div class="form-group">
+        <label for="targetInput">Target resource</label>
+        <input type="text" class="form-control" id="targetInput" value="http://purl.obolibrary.org/obo/BFO_0000002">
+    </div>
+    <div class="form-group">
+        <label for="maxDepth">Maximum depth</label>
+        <input type="number" class="form-control" id="maxDepth" value="5" min="1" max="20">
+    </div>
+    <button class="btn btn-primary" id="submitSearch">Submit</button>
+    <H3>Result</H3>
+</div>
+<div CLASS="container-fluid">
+    <p id="textResult"></p>
 </div>
 </body>
 <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"-->
-        <!--integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"-->
-        <!--crossorigin="anonymous"></script>-->
+<!--integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"-->
+<!--crossorigin="anonymous"></script>-->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
