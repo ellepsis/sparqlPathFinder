@@ -6,6 +6,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.util.FileManager
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 /**
@@ -14,12 +15,12 @@ import org.springframework.stereotype.Service
 @Service
 class ModelService {
 
-    val pathes: Array<String> = arrayOf(
-//            "C:\\Users\\ellepsis\\Downloads\\go.owl",
-            "C:\\Users\\ellepsis\\Downloads\\dcatap.rdf",
-            "C:\\Users\\ellepsis\\Downloads\\adalab.owl",
-            "C:\\Users\\ellepsis\\Downloads\\adalab2.owl"
-    )
+    @Value("\${app.files.paths}")
+    var pathes: Array<String> = emptyArray()
+//    val pathes: Array<String> = arrayOf(
+////            "C:\\Users\\ellepsis\\Downloads\\go.owl",
+//
+//    )
 
     fun loadAll(): List<ModelWithData> {
         return runBlocking {

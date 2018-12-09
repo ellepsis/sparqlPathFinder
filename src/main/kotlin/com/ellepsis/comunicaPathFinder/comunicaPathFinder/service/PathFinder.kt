@@ -35,10 +35,11 @@ class PathFinder(val maxDepth: Int = 3, val models: List<ModelWithData>,
         for (task in tasks) {
             val join = task.join()
             if (join != null) {
+                tasks.forEach { it.cancel(false) }
                 return join
             }
         }
-        return null;
+        return null
     }
 
     private fun executeQuery(depth: Int, executionResult: ExecutionResult, parentNode: TreeNode?): TreeNode? {
@@ -57,7 +58,7 @@ class PathFinder(val maxDepth: Int = 3, val models: List<ModelWithData>,
             }
         }
         val newDepth = depth + 1
-        return if (newDepth <= maxDepth) {
+        return if (newDepth <= maxDepth && !results.isEmpty()) {
             results.map {
                 val newParent = TreeNode(model.name, depth, it, parentNode)
                 executeQuery(newDepth, it, newParent)

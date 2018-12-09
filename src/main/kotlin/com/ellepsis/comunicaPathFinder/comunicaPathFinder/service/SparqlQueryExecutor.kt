@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 class SparqlQueryExecutor {
 
     fun executeQuery(query: String, model: Model): ArrayList<ExecutionResult> {
-        println(Thread.currentThread().name)
+        println("executing on thread ${Thread.currentThread().name}\t query $query")
         val request = QueryFactory.create(query)
         model.enterCriticalSection(Lock.READ)
         try {
