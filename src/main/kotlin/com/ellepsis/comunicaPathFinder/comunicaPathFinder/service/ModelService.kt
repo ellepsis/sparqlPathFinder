@@ -15,21 +15,21 @@ import org.springframework.stereotype.Service
 @Service
 class ModelService {
 
-    @Value("\${app.files.paths}")
+    @Value("\${app.modelFile.paths}")
     var pathes: Array<String> = emptyArray()
-//    val pathes: Array<String> = arrayOf(
-////            "C:\\Users\\ellepsis\\Downloads\\go.owl",
-//
-//    )
+    @Value("\${app.remoteService.paths}")
+    var remoteUrls: Array<String> = emptyArray()
 
     fun loadAll(): List<ModelWithData> {
-        return runBlocking {
+        val models = runBlocking {
             pathes.map { m ->
                 GlobalScope.async { loadModel(m) }
             }.map { deferred ->
                 deferred.await()
-            }
+            }.toMutableList()
         }
+        models.addAll(remoteUrls.map { ModelWithData(null, it, true) })
+        return models
     }
 
     suspend fun loadModel(path: String): ModelWithData {
@@ -38,6 +38,6 @@ class ModelService {
         fileStream.use { i ->
             model.read(i, null)
         }
-        return ModelWithData(model, path)
+        return ModelWithData(model, path, false)
     }
 }

@@ -18,9 +18,9 @@ class PathFinderService @Autowired constructor(val sparqlQueryExecutor: SparqlQu
 
     fun findPath(source: String, target: String, maxDepth: Int): TreeNode? {
         if (maxDepth < 1){
-            throw IllegalArgumentException("Minimum depth is 1");
+            throw IllegalArgumentException("Minimum depth is 1")
         }
-        val pathFinder = PathFinder(5, models, source, target, sparqlQueryExecutor)
+        val pathFinder = PathFinder(maxDepth, models, source, target, sparqlQueryExecutor)
         val now = LocalDateTime.now()
         val foundPath = pathFinder.findPath()
         println("Elapsed time: ${Duration.between(now, LocalDateTime.now()).toMillis()} ms")
@@ -35,7 +35,7 @@ class PathFinderService @Autowired constructor(val sparqlQueryExecutor: SparqlQu
                     WHERE {
                         ?x ?y ?z.
                     }
-                    """, m.model)
+                    """, m)
         }
 
     }

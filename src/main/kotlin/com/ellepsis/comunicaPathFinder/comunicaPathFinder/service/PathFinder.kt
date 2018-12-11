@@ -4,7 +4,9 @@ import com.ellepsis.comunicaPathFinder.comunicaPathFinder.entity.ExecutionResult
 import com.ellepsis.comunicaPathFinder.comunicaPathFinder.entity.ModelWithData
 import com.ellepsis.comunicaPathFinder.comunicaPathFinder.entity.TreeNode
 import java.util.concurrent.ForkJoinPool
+import java.util.concurrent.ForkJoinTask
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * @author ellepsis created on 25-Nov-18.
@@ -13,10 +15,11 @@ class PathFinder(val maxDepth: Int = 3, val models: List<ModelWithData>,
                  val source: String, val target: String,
                  val queryExecutor: SparqlQueryExecutor) {
 
-    val forkJoinPool: ForkJoinPool = ForkJoinPool(8)
+    val forkJoinPool: ForkJoinPool = ForkJoinPool(32)
+    val localForkJoinPool: ForkJoinPool = ForkJoinPool()
 
     var isResultFound: AtomicBoolean = AtomicBoolean(false)
-
+    val currentLevel: AtomicInteger = AtomicInteger()
     fun findPath() = executeQuery(1, source, null)
 
     private fun executeQuery(depth: Int, source: String, parentNode: TreeNode?): TreeNode? {
@@ -24,18 +27,31 @@ class PathFinder(val maxDepth: Int = 3, val models: List<ModelWithData>,
                     SELECT ?s ?r ?t
                     WHERE {
                         ?s ?r ?t
-                        FILTER (?s = <$source> && !isLiteral(?t)).
+                        FILTER (?s = <$source> && isIRI(?t)).
                     }
                     """
 //        FILTER (?s = <$source> && !isLiteral(?t)).
-        val tasks = models.map {
-            val function = { createNodeTree(query, it, depth, parentNode) }
-            forkJoinPool.submit(function)
+        val localTasks = mutableListOf<ForkJoinTask<TreeNode?>>()
+        val remoteTasks = mutableListOf<ForkJoinTask<TreeNode?>>()
+        for (model in models) {
+            val function = { createNodeTree(query, model, depth, parentNode) }
+            if (model.isRemote) {
+                remoteTasks.add(forkJoinPool.submit(function))
+            } else {
+                localTasks.add(localForkJoinPool.submit(function))
+            }
         }
-        for (task in tasks) {
+        for (task in localTasks) {
             val join = task.join()
             if (join != null) {
-                tasks.forEach { it.cancel(false) }
+                isResultFound.set(true)
+                return join
+            }
+        }
+        for (task in remoteTasks) {
+            val join = task.join()
+            if (join != null) {
+                isResultFound.set(true)
                 return join
             }
         }
@@ -50,7 +66,7 @@ class PathFinder(val maxDepth: Int = 3, val models: List<ModelWithData>,
         if (isResultFound.get()) {
             return null
         }
-        val results = queryExecutor.executeQuery(query, model.model)
+        val results = queryExecutor.executeQuery(query, model)
 
         for (result in results) {
             if (result.target.asResource().uri == target) {
